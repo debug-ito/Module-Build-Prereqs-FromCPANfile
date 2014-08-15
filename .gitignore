@@ -2,7 +2,7 @@ MANIFEST
 MANIFEST.bak
 Makefile
 Makefile.old
-Build
+/Build
 Build.bat
 META.*
 MYMETA.*
