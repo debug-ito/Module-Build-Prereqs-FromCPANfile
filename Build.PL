@@ -18,6 +18,7 @@ my $builder = Module::Build->new(
     requires => {
         "Module::CPANfile" => "1.0000",
         'Exporter' => "0",
+        'version' => "0.80",
     },
     test_requires => {
         'Test::More' => "0",

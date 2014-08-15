@@ -3,6 +3,7 @@ use strict;
 use warnings;
 use Module::CPANfile 1.0000;
 use Exporter qw(import);
+use version 0.80;
 
 our $VERSION = "0.01";
 
@@ -15,26 +16,37 @@ sub mb_prereqs_from_cpanfile {
     $cpanfile_path = "cpanfile" if not defined $cpanfile_path;
 
     my $file = Module::CPANfile->load($cpanfile_path);
+    
     return _prereqs_to_mb($file->prereqs, $version);
 }
 
 sub _prereqs_to_mb {
-    my ($prereqs_obj, $mb_version) = @_;
+    my ($prereqs, $mb_version_str) = @_;
     my %result = ();
-    my $prereqs = $prereqs_obj->as_string_hash;
-    _put_result($prereqs->{runtime}{requires}, \%result, "requires");
-    _put_result($prereqs->{runtime}{recommends}, \%result, "recommends");
-    _put_result($prereqs->{runtime}{conflicts}, \%result, "conflicts");
-    _put_result($prereqs->{build}{requires}, \%result, "build_requires");
-    _put_result($prereqs->{test}{requires}, \%result, "test_requires");
-    _put_result($prereqs->{configure}{requires}, \%result, "configure_requires");
+    my $mb_version = version->parse($mb_version_str);
+    _put_result($prereqs->requirements_for("runtime", "requires"), \%result, "requires");
+    _put_result($prereqs->requirements_for("runtime", "recommends"), \%result, "recommends");
+    _put_result($prereqs->requirements_for("runtime", "conflicts"), \%result, "conflicts");
+    if($mb_version < version->parse("0.30")) {
+        _put_result($prereqs->merged_requirements(["configure", "build", "test"], ["requires"]),
+                    \%result, "build_requires");
+    }elsif($mb_version < version->parse("0.4004")) {
+        _put_result($prereqs->merged_requirements(["build", "test"], ["requires"]),
+                    \%result, "build_requires");
+        _put_result($prereqs->requirements_for("configure", "requires"), \%result, "configure_requires");
+    }else {
+        foreach my $phase (qw(configure build test)) {
+            _put_result($prereqs->requirements_for($phase, "requires"), \%result, "${phase}_requires");
+        }
+    }
     return %result;
 }
 
 sub _put_result {
-    my ($prereq_modules_hashref, $result_hashref, $result_key) = @_;
-    if($prereq_modules_hashref && keys %$prereq_modules_hashref) {
-        $result_hashref->{$result_key} = $prereq_modules_hashref;
+    my ($requirements, $result_hashref, $result_key) = @_;
+    my $reqs_hashref = $requirements->as_string_hash;
+    if(keys %$reqs_hashref) {
+        $result_hashref->{$result_key} = $reqs_hashref;
     }
 }
 
