@@ -12,12 +12,17 @@ our @EXPORT = our @EXPORT_OK = qw(mb_prereqs_from_cpanfile);
 sub mb_prereqs_from_cpanfile {
     my (%args) = @_;
     my $version = $args{version};
+    $version = _get_mb_version() if not defined $version;
     my $cpanfile_path = $args{cpanfile};
     $cpanfile_path = "cpanfile" if not defined $cpanfile_path;
 
     my $file = Module::CPANfile->load($cpanfile_path);
-    
     return _prereqs_to_mb($file->prereqs, $version);
+}
+
+sub _get_mb_version {
+    require Module::Build;
+    return $Module::Build::VERSION;
 }
 
 sub _prereqs_to_mb {

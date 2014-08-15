@@ -20,6 +20,9 @@ my $builder = Module::Build->new(
         'Exporter' => "0",
         'version' => "0.80",
     },
+    recommends => {
+        "Module::Build" => "0.4004",
+    },
     test_requires => {
         'Test::More' => "0",
     },
