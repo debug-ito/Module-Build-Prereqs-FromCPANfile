@@ -1,8 +1,43 @@
 package Module::Build::Prereqs::FromCPANfile;
 use strict;
 use warnings;
+use Module::CPANfile 1.0000;
+use Exporter qw(import);
 
 our $VERSION = "0.01";
+
+our @EXPORT = our @EXPORT_OK = qw(mb_prereqs_from_cpanfile);
+
+sub mb_prereqs_from_cpanfile {
+    my (%args) = @_;
+    my $version = $args{version};
+    my $cpanfile_path = $args{cpanfile};
+    $cpanfile_path = "cpanfile" if not defined $cpanfile_path;
+
+    my $file = Module::CPANfile->load($cpanfile_path);
+    return _prereqs_to_mb($file->prereqs, $version);
+}
+
+sub _prereqs_to_mb {
+    my ($prereqs_obj, $mb_version) = @_;
+    my %result = ();
+    my $prereqs = $prereqs_obj->as_string_hash;
+    _put_result($prereqs->{runtime}{requires}, \%result, "requires");
+    _put_result($prereqs->{runtime}{recommends}, \%result, "recommends");
+    _put_result($prereqs->{runtime}{conflicts}, \%result, "conflicts");
+    _put_result($prereqs->{build}{requires}, \%result, "build_requires");
+    _put_result($prereqs->{test}{requires}, \%result, "test_requires");
+    _put_result($prereqs->{configure}{requires}, \%result, "configure_requires");
+    return %result;
+}
+
+sub _put_result {
+    my ($prereq_modules_hashref, $result_hashref, $result_key) = @_;
+    if($prereq_modules_hashref && keys %$prereq_modules_hashref) {
+        $result_hashref->{$result_key} = $prereq_modules_hashref;
+    }
+}
+
 
 1;
 __END__

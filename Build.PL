@@ -15,6 +15,10 @@ my $builder = Module::Build->new(
         directory => ["t", "xt", "eg", "inc"],
         file => ['README.pod'],
     },
+    requires => {
+        "Module::CPANfile" => "1.0000",
+        'Exporter' => "0",
+    },
     test_requires => {
         'Test::More' => "0",
     },
