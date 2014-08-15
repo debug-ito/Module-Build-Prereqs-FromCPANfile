@@ -80,7 +80,7 @@ my @testcases = (
     } },
 
     { input => {version => "0.10", cpanfile => "t/minimal.cpanfile"},
-      desc => "no param key should be generated if that prereq is not specified. test is merged to build",
+      desc => "no param key should be generated if that prereq is not specified. 'test' is merged to 'build'",
       exp => {
           requires => { "Scalar::Util" => "0" },
           build_requires => { "Test::More" => "0" }
@@ -93,6 +93,29 @@ my @testcases = (
           test_requires => {"Test::More" => "0"},
       } },
 
+    { input => {version => "0.10", cpanfile => "t/merged.cpanfile"},
+      desc => "merged to the highest required version (merge configure, build, test)",
+      exp => {
+          requires => {"Runtime" => "1.50"},
+          build_requires => {"Merged" => "2.10"}
+      } },
+
+    { input => {version => "0.35", cpanfile => "t/merged.cpanfile"},
+      desc => "merged to the highest required version (merge build, test)",
+      exp => {
+          requires => {"Runtime" => "1.50"},
+          configure_requires => {"Merged" => "0"},
+          build_requires => {"Merged" => "2.10"},
+      } },
+
+    { input => {version => "0.41", cpanfile => "t/merged.cpanfile"},
+      desc => "merged to the highest required version (no merge)",
+      exp => {
+          requires => {"Runtime" => "1.50"},
+          configure_requires => {"Merged" => "0"},
+          build_requires => {"Merged" => "1.30"},
+          test_requires => {"Merged" => "2.10"},
+      }}
 );
 
 foreach my $case (@testcases) {
