@@ -99,13 +99,13 @@ Fields in C<%args> are:
 
 Version number of the target L<Module::Build>.
 
-If ommited, L<Module::Build> is loaded and C<$Module::Build::VERSION> is used.
+If omitted, L<Module::Build> is loaded and C<$Module::Build::VERSION> is used.
 
 =item C<cpanfile> => FILEPATH (optional, default: "cpanfile")
 
 File path to the cpanfile to be loaded.
 
-If ommited, it loads "cpanfile" in the current directory.
+If omitted, it loads "cpanfile" in the current directory.
 
 =back
 
@@ -113,6 +113,8 @@ If ommited, it loads "cpanfile" in the current directory.
 =head1 SEE ALSO
 
 =over
+
+=item L<Module::Build>
 
 =item L<Module::Build::Pluggable::CPANfile>
 
