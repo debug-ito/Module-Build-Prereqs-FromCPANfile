@@ -3,10 +3,8 @@ use warnings;
 use Test::More;
 use Module::Build::Prereqs::FromCPANfile;
 
-my %input_base = (cpanfile => "t/mixed.cpanfile");  ## should we use File::Spec??
-
 my @testcases = (
-    { input => {version => "0.10"},
+    { input => {version => "0.10", cpanfile => "t/mixed.cpanfile"}, ## should we use File::Spec??
       desc => "configure_requires and test_requires is not supported",
       exp => {
         requires => {
@@ -29,7 +27,7 @@ my @testcases = (
         },
     } },
 
-    { input => {version => "0.35"},
+    { input => {version => "0.35", cpanfile => "t/mixed.cpanfile"},
       desc => "configure_requires is supported, but test_requires is not",
       exp => {
         requires => {
@@ -54,7 +52,7 @@ my @testcases = (
         },
     } },
 
-    { input => {version => "0.41"},
+    { input => {version => "0.41", cpanfile => "t/mixed.cpanfile"},
       desc => "configure_requires and test_requires are supported",
       exp => {
         requires => {
@@ -79,12 +77,31 @@ my @testcases = (
         test_requires => {
             TestRequires => "1.10",
         },
-    } }
+    } },
+
+    { input => {version => "0.10", cpanfile => "t/minimal.cpanfile"},
+      desc => "no param key should be generated if that prereq is not specified. test is merged to build",
+      exp => {
+          requires => { "Scalar::Util" => "0" },
+          build_requires => { "Test::More" => "0" }
+      } },
+
+    { input => {version => "0.50", cpanfile => "t/minimal.cpanfile"},
+      desc => "test_requires enabled. no build_requires",
+      exp => {
+          requires => {"Scalar::Util" => "0"},
+          test_requires => {"Test::More" => "0"},
+      } },
+
 );
 
 foreach my $case (@testcases) {
-    my %input = (%input_base, %{$case->{input}});
-    is_deeply {mb_prereqs_from_cpanfile(%input)}, $case->{exp}, "MB version $input{version}: $case->{desc}";
+    my %input = %{$case->{input}};
+    my %got = mb_prereqs_from_cpanfile(%input);
+    is_deeply \%got, $case->{exp}, "MB version $input{version}: file: $input{cpanfile}: $case->{desc}" or do {
+        diag("got parameters");
+        diag(explain \%got);
+    };
 }
 
 done_testing;
