@@ -19,6 +19,7 @@ my $builder = Module::Build->new(
         "Module::CPANfile" => "1.0000",
         'Exporter' => "0",
         'version' => "0.80",
+        'CPAN::Meta::Prereqs' => '2.132830',
     },
     recommends => {
         "Module::Build" => "0.4004",

@@ -2,6 +2,7 @@ package Module::Build::Prereqs::FromCPANfile;
 use strict;
 use warnings;
 use Module::CPANfile 1.0000;
+use CPAN::Meta::Prereqs 2.132830;
 use Exporter qw(import);
 use version 0.80;
 
