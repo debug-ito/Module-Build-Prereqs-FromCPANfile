@@ -6,7 +6,7 @@ use CPAN::Meta::Prereqs 2.132830;
 use Exporter qw(import);
 use version 0.80;
 
-our $VERSION = "0.01";
+our $VERSION = "0.02";
 
 our @EXPORT = our @EXPORT_OK = qw(mb_prereqs_from_cpanfile);
 
